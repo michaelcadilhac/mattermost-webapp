@@ -11,6 +11,10 @@ import EmojiMap from 'utils/emoji_map';
 
 import Renderer from './renderer';
 
+import {tokenizer} from './tokenizer';
+
+marked.use ({tokenizer});
+
 const removeMarkdown = new RemoveMarkdown();
 
 export function format(text: string, options = {}, emojiMap: EmojiMap) {
