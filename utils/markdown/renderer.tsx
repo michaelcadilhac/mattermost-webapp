@@ -100,6 +100,14 @@ export default class Renderer extends marked.Renderer {
     public codespan(text: string) {
         let output = text;
 
+        if (text.startsWith ("latex ")) {
+            // Do not use escapeHtml; this is already sanitized.
+            return (
+  		'<span data-latex="' + text.substr(6) + '"></span>'
+            );
+        }
+  
+
         if (this.formattingOptions.searchPatterns) {
             const tokens = new Map();
             output = TextFormatting.highlightSearchTerms(

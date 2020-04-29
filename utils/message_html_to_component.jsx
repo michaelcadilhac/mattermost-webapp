@@ -138,8 +138,9 @@ export function messageHtmlToComponent(html, isRHS, options = {}) {
         processingInstructions.push({
             shouldProcessNode: (node) => node.attribs && node.attribs['data-latex'],
             processNode: (node) => {
+                const isDisplay = (node.name == 'div');
                 return (
-                    <LatexBlock content={node.attribs['data-latex']}/>
+                    <LatexBlock content={node.attribs['data-latex']} displayMode={isDisplay}/>
                 );
             },
         });
