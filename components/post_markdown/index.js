@@ -13,6 +13,8 @@ function mapStateToProps(state, ownProps) {
     return {
         channel,
         pluginHooks: state.plugins.components.MessageWillFormat,
+        codeBlockComponents: state.plugins.components.CodeBlockComponent || [],
+        codeSpanComponents: state.plugins.components.CodeSpanComponent || [], 
         hasPluginTooltips: Boolean(state.plugins.components.LinkTooltip),
         isUserCanManageMembers: channel && canManageMembers(state, channel),
     };

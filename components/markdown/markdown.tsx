@@ -85,6 +85,16 @@ type Props = {
     imagesMetadata?: Dictionary<PostImage>;
 
     /**
+     * If specified, code blocks are replaced by components provided by plugins
+     */
+    codeBlockComponents?: PropTypes.arrayOf(PropTypes.object),
+
+    /**
+     * If specified, code spans are replaced by components provided by plugins
+     */
+    codeSpanComponents?: PropTypes.arrayOf(PropTypes.object),
+
+    /**
      * Whether or not to place the LinkTooltip component inside links
      */
     hasPluginTooltips?: boolean;
@@ -124,12 +134,16 @@ export default class Markdown extends React.PureComponent<Props> {
             proxyImages: this.props.hasImageProxy && this.props.proxyImages,
             team: this.props.team,
             minimumHashtagLength: this.props.minimumHashtagLength,
+            codeBlockComponents: this.props.codeBlockComponents,
+            codeSpanComponents: this.props.codeSpanComponents,
         }, this.props.options);
 
         const htmlFormattedText = formatText(this.props.message, options, this.props.emojiMap);
         return messageHtmlToComponent(htmlFormattedText, this.props.isRHS, {
             imageProps: this.props.imageProps,
             imagesMetadata: this.props.imagesMetadata,
+            codeBlockComponents: this.props.codeBlockComponents,
+            codeSpanComponents: this.props.codeSpanComponents,
             hasPluginTooltips: this.props.hasPluginTooltips,
             postId: this.props.postId,
             postType: this.props.postType,

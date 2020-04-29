@@ -584,4 +584,50 @@ export default class PluginRegistry {
 
         return {id, showRHSPlugin: showRHSPlugin(id), hideRHSPlugin: hideRHSPlugin(id), toggleRHSPlugin: toggleRHSPlugin(id)};
     }
+
+    // Register a component to replace code blocks with components provided by plugins.
+    // Accepts the following:
+    // - languages - a list of languages that can be handled by the provided component, e.g. ['tex', 'latex'].
+    // - component - a React component to handle a code block.
+    // Returns a unique identifier.
+    registerCodeBlockComponent(languages, component) {
+        const id = generateId();
+        
+        store.dispatch({
+            type: ActionTypes.RECEIVED_PLUGIN_COMPONENT,
+            name: 'CodeBlockComponent',
+            data: {
+                id,
+                pluginId: this.id,
+                component,
+                languages,
+            },
+        });
+        
+        return id;
+    }
+
+    // Register a component to replace code spans with components provided by plugins.
+    // Accepts the following:
+    // - languages - a list of languages that can be handled by the provided component, e.g. ['tex', 'latex'].
+    //               codespans don't have typically a language, this is taken to be the first word after
+    //               the opening quote.
+    // - component - a React component to handle a code span.
+    // Returns a unique identifier.
+    registerCodeSpanComponent(languages, component) {
+        const id = generateId();
+        
+        store.dispatch({
+            type: ActionTypes.RECEIVED_PLUGIN_COMPONENT,
+            name: 'CodeSpanComponent',
+            data: {
+                id,
+                pluginId: this.id,
+                component,
+                languages,
+            },
+        });
+        
+        return id;
+    }
 }

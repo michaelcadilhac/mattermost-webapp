@@ -9,6 +9,7 @@ import LatexBlock from 'components/latex_block';
 import LinkTooltip from 'components/link_tooltip/link_tooltip';
 import MarkdownImage from 'components/markdown_image';
 import PostEmoji from 'components/post_emoji';
+import Pluggable from 'plugins/pluggable';
 
 /*
  * Converts HTML to React components using html-to-react.
@@ -20,6 +21,8 @@ import PostEmoji from 'components/post_emoji';
  * - imageProps - If specified, any extra props that should be passed into the image component.
  * - latex - If specified, latex is replaced with the LatexBlock component. Defaults to true.
  * - imagesMetadata - the dimensions of the image as retrieved from post.metadata.images.
+ * - codeBlockComponents - If specified, code blocks are replaced by components provided by plugins. Defaults to empty.
+ * - codeSpanComponents - If specified, code spans are replaced by components provided by plugins. Defaults to empty.
  * - hasPluginTooltips - If specified, the LinkTooltip component is placed inside links. Defaults to false.
  */
 export function messageHtmlToComponent(html, isRHS, options = {}) {
@@ -133,6 +136,30 @@ export function messageHtmlToComponent(html, isRHS, options = {}) {
             },
         });
     }
+
+    if (options.codeBlockComponents || options.codeSpanComponents) {
+        processingInstructions.push({
+            shouldProcessNode: (node) => node.attribs && node.attribs['data-code'],
+            processNode: (node) => {
+                const codeLanguage = node.attribs['data-language'];
+                let plugin, pluggableName;
+                if (node.type === 'div') {
+                    plugin = options.codeBlockComponents.find((p) => p.languages.indexOf(codeLanguage) > -1);
+                    pluggableName = 'CodeBlockComponent';
+                } else { // node.type should be 'span'
+                    plugin = options.codeSpanComponents.find((p) => p.languages.indexOf(codeLanguage) > -1);
+                    pluggableName = 'CodeSpanComponent';
+                }
+
+                return (
+                    <Pluggable
+                      content={node.attribs['data-code']}
+                      pluggableId={plugin.id}
+                      pluggableName={pluggableName}
+                      />
+                );
+            },
+        });
 
     if (!('latex' in options) || options.latex) {
         processingInstructions.push({

@@ -31,6 +31,11 @@ export default class Renderer extends marked.Renderer {
         let usedLanguage = language || '';
         usedLanguage = usedLanguage.toLowerCase();
 
+        const codeBlockComponents = this.formattingOptions.codeBlockComponents;
+        if (codeBlockComponents && codeBlockComponents.find((p) => p.languages.indexOf(usedLanguage) > -1)) {
+            return `<div data-language="${usedLanguage}" data-code="${TextFormatting.escapeHtml(code)}"></div>`;
+        }
+
         if (usedLanguage === 'tex' || usedLanguage === 'latex') {
             return `<div data-latex="${TextFormatting.escapeHtml(code)}"></div>`;
         }
@@ -99,6 +104,18 @@ export default class Renderer extends marked.Renderer {
 
     public codespan(text: string) {
         let output = text;
+
+        // We emulate language-dependent codespans by parsing the first word as a language.
+        const languageMatch = text.match(/[a-zA-Z]+/);
+        if (match) {
+            let usedLanguage = languageMatch[0];
+            usedLanguage = usedLanguage.toLowerCase();
+            const codeSpanComponents = this.formattingOptions.codeSpanComponents;
+            if (codeSpanComponents && codeSpanComponents.find((p) => p.languages.indexOf(usedLanguage) > -1)) {
+                let code = text.substr (usedLanguage.length + 1);
+                return `<span data-language="${usedLanguage}" data-code="${TextFormatting.escapeHtml(code)}"></span>`;
+            }
+        }
 
         if (this.formattingOptions.searchPatterns) {
             const tokens = new Map();
